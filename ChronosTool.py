@@ -350,7 +350,7 @@ class CBM:
 		payload = bytearray( [0x00, nr_of_bursts&0xff, nr_of_bursts>>8] )
 		return self.sendcmd( 0x47, payload )
 
-	def spl_sync( self, dt=[], celsius=0, meters=0 ):
+	def spl_sync( self, dt=[], celsius=20, meters=250 ):
 		self.spl_start()
 		raw_input("Put your watch in sync mode, wait a few seconds, and press return...")
 		time.sleep( 2 )
