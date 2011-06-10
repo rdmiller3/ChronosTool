@@ -235,12 +235,18 @@ class CBM:
 	def send( self, cmd ):
 		self.device.write( cmd.tostr() )
 		time.sleep( 0.015 )
-		print 'SENT:', cmd.tohex()
+		if opt.verbose :
+		    print 'SENT:', cmd.tohex()
+		else :
+		    print '.',
 		response = bytearray( self.device.read( 3 ) )
 		if response[2] > 3:
 			response += bytearray( self.device.read( response[2]-3 ) )
 		self.response = CBMcmd( response[1], response[3:] )
-		print 'RECV:', self.response.tohex()
+		if opt.verbose :
+		    print 'RECV:', self.response.tohex()
+		else
+		    print '.',
 		return self.response
 
 	def sendcmd( self, opcode, payload=[] ):
@@ -354,7 +360,9 @@ class CBM:
 
 		payload = bytearray( 0x13 )
 		payload[0x00] = 0x03
-		payload[0x01] = dt.hour+0x80 #assume 24h
+		payload[0x01] = dt.hour #assume 24h
+		if opt.metric :
+		    payload[0x01] |= 0x80;
 		payload[0x02] = dt.minute
 		payload[0x03] = dt.second
 		payload[0x04] = 0x07
@@ -607,8 +615,9 @@ usage = "usage: %prog [options] rfbsl|sync|prg [<arguments> ...]"
 parser = OptionParser( usage=usage, version="%prog "+version )
 parser.add_option( "-d", "--device", dest="device", metavar="DEVICE",
 		help="specify USB device of Base Module, will guess if ommited" )
-parser.add_option( "-v", "--verbose", action="store_true", dest="verbose", default=True,
+parser.add_option( "-v", "--verbose", action="store_true", dest="verbose", default=False,
 		help="show CBM communication" )
+parser.add_option( "-i", "--imperial", action="store_false", dest="metric", default=True, help="use imperial units" )
 
 (opt, args) = parser.parse_args()
 
@@ -619,7 +628,7 @@ if len( args ) == 0:
 
 #If no device option given, try to guess
 if not opt.device:
-	device_guess = ["/dev/ttyUSB0", "/dev/cu.usbmodem001"]
+	device_guess = ["/dev/ttyUSB0", "/dev/cu.usbmodem001", "/dev/ttyACM0"]
 	for path in device_guess:
 		if os.path.exists( path ):
 			opt.device = path
