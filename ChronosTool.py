@@ -618,6 +618,8 @@ parser.add_option( "-d", "--device", dest="device", metavar="DEVICE",
 parser.add_option( "-v", "--verbose", action="store_true", dest="verbose", default=False,
 		help="show CBM communication" )
 parser.add_option( "-i", "--imperial", action="store_false", dest="metric", default=True, help="use imperial units" )
+parser.add_option( "-t", "--temperature", dest="temperature", help="temperature in degrees C (degF if --imperial)" )
+parser.add_option( "-a", "--altitude", dest="altitude", help="altitude above sea level in meters (feet if --imperial)" )
 
 (opt, args) = parser.parse_args()
 
@@ -637,6 +639,18 @@ if (not opt.device) or (not os.path.exists( opt.device )):
 	print "ERROR: no Base Module device found, please specify as option"
 	sys.exit( 6 )
 
+if len(opt.temperature) > 0 :
+    if opt.metric :
+        degC = int(opt.temperature * 10.0) / 10.0;
+    else :
+        degC = int(((opt.temperature - 32) / 1.8) * 10.0) / 10.0
+
+if len(opt.altitude) > 0 :
+    if opt.metric :
+        alt_meters = int(opt.altitude * 10.0) / 10.0;
+    else :
+        alt_meters = int((opt.altitude / 3.2808399) * 10.0) / 10.0
+
 command = args[0]
 if command == "rfbsl":
 	if len( args ) < 2:
@@ -650,7 +664,7 @@ if command == "rfbsl":
 	bm.wbsl_download( file )
 elif command == "sync":
 	bm = CBM( opt.device )
-	bm.spl_sync()
+	bm.spl_sync(datetime.datetime.now(), degC, alt_meters)
 elif command == "prg":
 	if len( args ) < 2:
         	print "ERROR: prg requires file name as argument"
@@ -661,7 +675,7 @@ elif command == "prg":
 		sys.exit( 7 )
 	bm = CBM( opt.device )
 	bm.wbsl_download( file )
-	bm.spl_sync()
+	bm.spl_sync(datetime.datetime.now(), degC, alt_meters)
 else:
 	print "ERROR: invalid command:", command
 	sys.exit( 4 )
