@@ -351,7 +351,7 @@ class CBM:
 		payload = bytearray( [0x00, nr_of_bursts&0xff, nr_of_bursts>>8] )
 		return self.sendcmd( 0x47, payload )
 
-	def spl_sync( self, dt=[], celsius=20, meters=250 ):
+	def spl_sync_set( self, dt=[], celsius=20, meters=250 ):
 		self.spl_start()
 		raw_input("Put your watch in sync mode, wait a few seconds, and press return...")
 		time.sleep( 2 )
@@ -360,7 +360,7 @@ class CBM:
 			dt = datetime.datetime.now()
 
 		payload = bytearray( 0x13 )
-		payload[0x00] = 0x03
+		payload[0x00] = 0x03 # SYNC_AP_CMD_SET_WATCH
 		payload[0x01] = dt.hour #assume 24h
 		if opt.metric :
 		    payload[0x01] |= 0x80;
@@ -667,7 +667,7 @@ if command == "rfbsl":
 	bm.wbsl_download( file )
 elif command == "set":
 	bm = CBM( opt.device )
-	bm.spl_sync(datetime.datetime.now(), degC, alt_meters)
+	bm.spl_sync_set(datetime.datetime.now(), degC, alt_meters)
 elif command == "prg":
 	if len( args ) < 2:
         	print "ERROR: prg requires file name as argument"
@@ -678,7 +678,7 @@ elif command == "prg":
 		sys.exit( 7 )
 	bm = CBM( opt.device )
 	bm.wbsl_download( file )
-	bm.spl_sync(datetime.datetime.now(), degC, alt_meters)
+	bm.spl_sync_set(datetime.datetime.now(), degC, alt_meters)
 else:
 	print "ERROR: invalid command:", command
 	sys.exit( 4 )
