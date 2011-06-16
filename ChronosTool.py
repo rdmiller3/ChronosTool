@@ -382,6 +382,21 @@ class CBM:
 		time.sleep( 2 )
 		self.spl_stop()
 
+	def spl_sync_status( self ):
+        self.spl_start()
+        raw_input("Put your watch in sync mode, wait a few seconds, and press return...")
+        time.sleep( 2 )
+
+        payload = bytearray( 0x01 )
+        payload[0x00] = 0x02 # SYNC_AP_CMD_GET_STATUS
+
+        self.sendcmd( 0x31, payload ) #BM_SYNC_SendCommand
+
+        # TBD: Somewhere in here, read the data back.
+
+        time.sleep( 2 )
+        self.spl_stop()
+
 	def transmitburst( self, data ):
 		self.wbsl_start()
 		time.sleep( 0.5 )
@@ -670,7 +685,8 @@ elif command == "set":
 	bm = CBM( opt.device )
 	bm.spl_sync_set(datetime.datetime.now(), degC, alt_meters)
 elif command == "status":
-    TBD
+	bm = CBM( opt.device )
+    bm.spl_sync_status()
 elif command == "prg":
 	if len( args ) < 2:
         	print "ERROR: prg requires file name as argument"
