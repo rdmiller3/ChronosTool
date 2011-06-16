@@ -399,6 +399,31 @@ class CBM:
         time.sleep( 2 )
         self.spl_stop()
 
+    def spl_sync_data( self, start_burst_num=0, burst_count=1 ):
+        start_burst_num = int(start_burst_num)
+        # Note: burst_end_idx is last burst PLUS ONE
+        burst_end_idx = start_burst_num + int(burst_count)
+        self.spl_start()
+        raw_input("Put your watch in sync mode, wait a few seconds, and press return...")
+        time.sleep( 2 )
+
+        payload = bytearray( 0x05 )
+        payload[0x00] = 0x04 # SYNC_AP_CMD_GET_MEMORY_BLOCKS_MODE_1
+        payload[0x01] = (start_burst_num >> 8) & 0x00ff
+        payload[0x02] = start_burst_num & 0x00ff
+        payload[0x03] = (burst_end_idx >> 8) & 0x00ff
+        payload[0x04] = burst_end_idx & 0x00ff
+
+        self.sendcmd( 0x31, payload ) #BM_SYNC_SendCommand
+
+        # TBD: Somewhere in here, read the data back.
+        # Maybe using something like this?
+        #     for burst_num in range(start_burst_num, burst_end_idx - 1):
+        #         receive_and_display_burst(burst_num)
+
+        time.sleep( 2 )
+        self.spl_stop()
+
     def transmitburst( self, data ):
         self.wbsl_start()
         time.sleep( 0.5 )
@@ -630,7 +655,7 @@ q""" )
 
 from optparse import OptionParser
 
-usage = "usage: %prog [options] rfbsl|set|status|prg [<arguments> ...]"
+usage = "usage: %prog [options] rfbsl|set|status|data|prg [<arguments> ...]"
 parser = OptionParser( usage=usage, version="%prog "+version )
 parser.add_option( "-d", "--device", dest="device", metavar="DEVICE",
         help="specify USB device of Base Module, will guess if ommited" )
@@ -689,6 +714,15 @@ elif command == "set":
 elif command == "status":
     bm = CBM( opt.device )
     bm.spl_sync_status()
+elif command == "data":
+    if len( args ) < 2:
+            print "ERROR: data <start_burst_num> [burst_count]"
+            sys.exit( 5 )
+    bm = CBM( opt.device )
+    if len(args) < 3:
+        bm.spl_sync_data(args[1], 1)
+    else:
+        bm.spl_sync_data(args[1], args[2])
 elif command == "prg":
     if len( args ) < 2:
             print "ERROR: prg requires file name as argument"
