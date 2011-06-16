@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# vim: set expandtab sw=4 ts=4 :
 ###################################################################################################
 # ChronosTool.py
 # Tool for programming TI eZ430-Chronos watches
