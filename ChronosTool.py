@@ -245,7 +245,7 @@ class CBM:
 		self.response = CBMcmd( response[1], response[3:] )
 		if opt.verbose :
 		    print 'RECV:', self.response.tohex()
-		else
+		else :
 		    print '.',
 		return self.response
 
@@ -371,10 +371,10 @@ class CBM:
 		payload[0x07] = dt.day
 		payload[0x08] = 0x06
 		payload[0x09] = 0x1e
-		payload[0x0a] = (celsius*10)>>8
-		payload[0x0b] = (celsius*10)&0xff
-		payload[0x0c] = meters>>8
-		payload[0x0d] = meters&0xff
+		payload[0x0a] = int(celsius*10)>>8
+		payload[0x0b] = int(celsius*10)&0xff
+		payload[0x0c] = int(meters) >> 8
+		payload[0x0d] = int(meters) & 0xff
 
 		self.sendcmd( 0x31, payload ) #BM_SYNC_SendCommand
 		time.sleep( 2 )
@@ -639,17 +639,19 @@ if (not opt.device) or (not os.path.exists( opt.device )):
 	print "ERROR: no Base Module device found, please specify as option"
 	sys.exit( 6 )
 
-if len(opt.temperature) > 0 :
+degC = 20.0
+alt_meters = 300
+if opt.temperature :
     if opt.metric :
-        degC = int(opt.temperature * 10.0) / 10.0;
+        degC = int(float(opt.temperature) * 10.0) / 10.0;
     else :
-        degC = int(((opt.temperature - 32) / 1.8) * 10.0) / 10.0
+        degC = int(((float(opt.temperature) - 32) / 1.8) * 10.0) / 10.0
 
-if len(opt.altitude) > 0 :
+if opt.altitude :
     if opt.metric :
-        alt_meters = int(opt.altitude * 10.0) / 10.0;
+        alt_meters = int(int(opt.altitude) * 10.0) / 10.0;
     else :
-        alt_meters = int((opt.altitude / 3.2808399) * 10.0) / 10.0
+        alt_meters = int((int(opt.altitude) / 3.2808399) * 10.0) / 10.0
 
 command = args[0]
 if command == "rfbsl":
