@@ -3,7 +3,7 @@ Tool for programming TI eZ430-Chronos watches
 
 Features:
 	- Full support for rfbsl "over the air" updates
-	- Set time with local clock
+	- Set time from local clock
 	- limited device auto detection
 
 Todo:
