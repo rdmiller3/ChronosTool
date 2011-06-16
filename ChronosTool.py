@@ -45,9 +45,10 @@
 # *************************************************************************************************
 #
 ###################################################################################################
-version = "0.1"
+version = "0.1.1"
 # Changelog:
 #   0.1 - public preview version
+#   0.1.1 - fixes by rdmiller3
 #
 ###################################################################################################
 
@@ -611,7 +612,7 @@ q""" )
 
 from optparse import OptionParser
 
-usage = "usage: %prog [options] rfbsl|sync|prg [<arguments> ...]"
+usage = "usage: %prog [options] rfbsl|set|prg [<arguments> ...]"
 parser = OptionParser( usage=usage, version="%prog "+version )
 parser.add_option( "-d", "--device", dest="device", metavar="DEVICE",
 		help="specify USB device of Base Module, will guess if ommited" )
@@ -664,7 +665,7 @@ if command == "rfbsl":
 		sys.exit( 7 )
 	bm = CBM( opt.device )
 	bm.wbsl_download( file )
-elif command == "sync":
+elif command == "set":
 	bm = CBM( opt.device )
 	bm.spl_sync(datetime.datetime.now(), degC, alt_meters)
 elif command == "prg":
