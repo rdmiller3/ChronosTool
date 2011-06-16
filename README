@@ -3,20 +3,24 @@ Tool for programming TI eZ430-Chronos watches
 
 Features:
 	- Full support for rfbsl "over the air" updates
-	- Sync time with local clock
+	- Set time with local clock
 	- limited device auto detection
 
 Todo:
-	- make output less verbose
-	- reading features, f.e. acceleration data streaming
+    - reading features
+        - status
+        - data logger
+        - acceleration data streaming
 
 Changelog:
-	0.1 - public preview version
+    0.1 - public preview version
+    0.1.1 - fixes by rdmiller3
+    0.1.2 - read status by rdmiller3
 
 Example:
 	./ChronosTool.py -d /dev/ttyACM3 prg eZChronos.txt
 
-Ressources:
+Resources:
 	- More info on the TI eZ430-Chronos:
 	  http://processors.wiki.ti.com/index.php/EZ430-Chronos
 
